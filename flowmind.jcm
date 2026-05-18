@@ -1,0 +1,9 @@
+mas flowmind {
+
+    agent fault_detection: fault_detection.asl
+    agent diagnostic: diagnostic.asl
+    agent dispatch: dispatch.asl
+    agent people_flow: people_flow.asl
+    agent reporting: reporting.asl
+
+}

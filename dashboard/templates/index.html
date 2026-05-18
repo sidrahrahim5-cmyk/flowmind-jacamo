@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlowMind — MAS Operations Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a1628;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+header{background:#0d1f3c;border-bottom:1px solid #1e3a5f;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-sq{width:36px;height:36px;background:#1a56db;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo h1{font-size:18px;font-weight:700;color:#e2e8f0;letter-spacing:1px}
+.logo p{font-size:11px;color:#64748b;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.live{display:flex;align-items:center;gap:7px;font-size:11px;color:#22c55e;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);padding:5px 12px;border-radius:4px;letter-spacing:1px}
+.dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+main{padding:20px 28px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kpi{background:#0d1f3c;border:1px solid #1e3a5f;border-radius:8px;padding:18px 20px;display:flex;align-items:center;gap:14px}
+.kpi-ico{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.kpi-ico.b{background:rgba(26,86,219,0.15)}
+.kpi-ico.r{background:rgba(239,68,68,0.12)}
+.kpi-ico.y{background:rgba(234,179,8,0.12)}
+.kpi-ico.g{background:rgba(34,197,94,0.1)}
+.kpi-val{font-size:28px;font-weight:700;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
+.kpi-lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+.row2{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:16px}
+.card{background:#0d1f3c;border:1px solid #1e3a5f;border-radius:8px;padding:18px 20px}
+.card-hd{font-size:10px;font-weight:600;color:#64748b;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.agent-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(30,58,95,0.6)}
+.agent-row:last-child{border:none}
+.a-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.a-dot.active{background:#22c55e}
+.a-dot.alert{background:#ef4444;animation:blink .8s infinite}
+.a-dot.idle{background:#334155}
+.a-name{font-size:13px;color:#cbd5e1;flex:1;font-family:monospace}
+.a-cnt{font-size:11px;color:#475569;background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:10px}
+.inc-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(30,58,95,0.6)}
+.inc-row:last-child{border:none}
+.badge{font-size:10px;font-weight:700;padding:3px 7px;border-radius:3px;letter-spacing:.5px;flex-shrink:0;margin-top:1px}
+.badge.E{background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25)}
+.badge.S{background:rgba(234,179,8,0.1);color:#fbbf24;border:1px solid rgba(234,179,8,0.2)}
+.inc-eq{font-size:13px;color:#e2e8f0;font-family:monospace}
+.inc-tech{font-size:11px;color:#64748b;margin-top:3px}
+.log-feed{height:360px;overflow-y:auto}
+.log-feed::-webkit-scrollbar{width:3px}
+.log-feed::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:2px}
+.log-entry{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid rgba(30,58,95,0.4);font-size:11px;font-family:monospace}
+.log-ag{color:#3b82f6;flex-shrink:0;width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log-msg{color:#94a3b8;line-height:1.4}
+.log-msg.emergency{color:#f87171}
+.log-msg.alert{color:#fbbf24}
+.log-msg.system{color:#34d399}
+.log-msg.report{color:#60a5fa}
+.row3{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sc-box{border-radius:8px;padding:16px 20px;border:1px solid}
+.sc-box.s1{background:rgba(26,86,219,0.05);border-color:rgba(26,86,219,0.25)}
+.sc-box.s2{background:rgba(239,68,68,0.04);border-color:rgba(239,68,68,0.2)}
+.sc-tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:7px}
+.sc-box.s1 .sc-tag{color:#3b82f6}
+.sc-box.s2 .sc-tag{color:#f87171}
+.sc-title{font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:6px}
+.sc-desc{font-size:12px;color:#64748b;line-height:1.6}
+.empty{color:#334155;font-size:12px;font-family:monospace;text-align:center;padding:24px;opacity:.7}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-sq">⚡</div>
+    <div>
+      <h1>FLOWMIND</h1>
+      <p>Smart Elevator &amp; Escalator MAS</p>
+    </div>
+  </div>
+  <div class="live"><div class="dot"></div>LIVE MONITORING</div>
+</header>
+<main>
+  <div class="kpi"><div class="kpi-ico b">📊</div><div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-lbl">Total Incidents</div></div></div>
+  <div class="kpi"><div class="kpi-ico r">🚨</div><div><div class="kpi-val" id="kpi-em">0</div><div class="kpi-lbl">Emergencies</div></div></div>
+  <div class="kpi"><div class="kpi-ico y">🔧</div><div><div class="kpi-val" id="kpi-sc">0</div><div class="kpi-lbl">Scheduled</div></div></div>
+  <div class="kpi"><div class="kpi-ico g">👥</div><div><div class="kpi-val" id="kpi-ps">0</div><div class="kpi-lbl">Passengers</div></div></div>
+  <div class="row2">
+    <div class="card">
+      <div class="card-hd">🤖 Agent Network</div>
+      <div id="agents-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd">⚠️ Incident Log</div>
+      <div id="incidents-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd">📡 Live Agent Feed</div>
+      <div class="log-feed" id="event-log"></div>
+    </div>
+  </div>
+  <div class="row3">
+    <div class="sc-box s1">
+      <div class="sc-tag">Scenario 1</div>
+      <div class="sc-title">Rush Hour Fault — Helsinki Tower</div>
+      <div class="sc-desc">ELV-01 bearing wear detected during peak load (340 passengers). Emergency dispatch triggered before failure window.</div>
+    </div>
+    <div class="sc-box s2">
+      <div class="sc-tag">Scenario 2</div>
+      <div class="sc-title">Cascading Fault — Shopping Mall</div>
+      <div class="sc-desc">ESC-A emergency (vibration 9.2) + ESC-B scheduled (temp 78°C). BDI triage — dual technician dispatch decision.</div>
+    </div>
+  </div>
+</main>
+<script>
+function updateDashboard(data){
+  document.getElementById('kpi-total').textContent=data.kpis.total;
+  document.getElementById('kpi-em').textContent=data.kpis.emergency;
+  document.getElementById('kpi-sc').textContent=data.kpis.scheduled;
+  document.getElementById('kpi-ps').textContent=data.kpis.passengers;
+
+  const al=document.getElementById('agents-list');
+  al.innerHTML='';
+  for(const[name,info] of Object.entries(data.agents)){
+    al.innerHTML+=`<div class="agent-row"><div class="a-dot ${info.status}"></div><div class="a-name">${name}</div><div class="a-cnt">${info.messages} msgs</div></div>`;
+  }
+
+  const il=document.getElementById('incidents-list');
+  if(!data.incidents.length){
+    il.innerHTML='<div class="empty">No incidents yet...</div>';
+  } else {
+    il.innerHTML='';
+    data.incidents.forEach(inc=>{
+      il.innerHTML+=`<div class="inc-row"><div class="badge ${inc.severity[0]}">${inc.severity}</div><div><div class="inc-eq">${inc.equipment}</div><div class="inc-tech">${inc.technician||'Assigning...'}</div></div></div>`;
+    });
+  }
+
+  const log=document.getElementById('event-log');
+  log.innerHTML='';
+  [...data.events].reverse().forEach(ev=>{
+    log.innerHTML+=`<div class="log-entry"><span class="log-ag">[${ev.agent}]</span><span class="log-msg ${ev.type}">${ev.message}</span></div>`;
+  });
+}
+
+async function fetchData(){
+  try{
+    const res=await fetch('/api/data');
+    const data=await res.json();
+    updateDashboard(data);
+  }catch(e){console.error(e);}
+}
+
+fetchData();
+setInterval(fetchData,2000);
+</script>
+</body>
+</html>
